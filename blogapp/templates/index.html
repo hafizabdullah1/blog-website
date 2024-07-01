@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Post List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <header class="text-gray-600 body-font shadow">
+      <div
+        class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center justify-between"
+      >
+        <a
+          class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+            ></path>
+          </svg>
+          <span class="ml-3 text-xl">Blog Website</span>
+        </a>
+
+        {%if request.user.is_authenticated%}
+        <div>
+          <a href="{% url 'blog_create' %}">
+            <button
+              class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 font-semibold"
+            >
+              Create Blog
+            </button>
+          </a>
+          <a href="{% url 'logout' %}">
+            <button
+              class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 font-semibold"
+            >
+              Logout
+            </button>
+          </a>
+        </div>
+        {%else%}
+        <div>
+          <a href="{% url 'login' %}">
+            <button
+              class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 font-semibold"
+            >
+              Login
+            </button>
+          </a>
+          <a href="{% url 'signup' %}">
+            <button
+              class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0 font-semibold"
+            >
+              Sign Up
+            </button>
+          </a>
+        </div>
+        {%endif%}
+      </div>
+    </header>
+
+    <section class="text-gray-600 body-font overflow-hidden">
+      <h1 class="text-3xl font-bold mt-8 ml-14 underline">All Post List</h1>
+      {% if posts %} {% for post in posts %}
+      <div class="container px-5 py-24 mx-auto shadow">
+        <div class="-my-8 divide-y-2 divide-gray-100">
+          <div class="py-8 flex flex-wrap md:flex-nowrap">
+            <div class="md:w-64 md:mb-0 mb-6 flex-shrink-0 flex flex-col m-2">
+              <img
+                src="{{ post.image.url }}"
+                alt="{{ post.title }}"
+                width="250px"
+                style="max-height: 180px"
+              />
+            </div>
+            <div class="md:flex-grow">
+              <h2 class="text-2xl font-medium text-gray-900 title-font mb-2">
+                {{ post.title }}
+              </h2>
+              <p class="leading-relaxed">{{ post.description }}</p>
+              <p></p>
+              <div class="flex justify-between items-center">
+                <a
+                  href="{% url 'post_detail' id=post.id %}"
+                  class="text-indigo-500 inline-flex items-center mt-4"
+                  >Learn More
+                  <svg
+                    class="w-4 h-4 ml-2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="M12 5l7 7-7 7"></path>
+                  </svg>
+                </a>
+                {% if request.user.id == post.author.id %}
+                <div>
+                  <a href="{% url 'update_post' id=post.id %}">
+                    <button
+                      class="inline-flex items-center px-4 py-2 bg-blue-600 transition ease-in-out delay-75 hover:bg-blue-700 text-white text-sm font-medium rounded-md hover:-translate-y-1 hover:scale-110"
+                    >
+                      <svg
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-5 w-5 mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          stroke-width="2"
+                          stroke-linejoin="round"
+                          stroke-linecap="round"
+                        ></path>
+                      </svg>
+
+                      Edit
+                    </button>
+                  </a>
+                  <a href="{% url 'delete_post' id=post.id %}">
+                    <button
+                      class="inline-flex items-center px-4 py-2 bg-red-600 transition ease-in-out delay-75 hover:bg-red-700 text-white text-sm font-medium rounded-md hover:-translate-y-1 hover:scale-110"
+                    >
+                      <svg
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        class="h-5 w-5 mr-2"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          stroke-width="2"
+                          stroke-linejoin="round"
+                          stroke-linecap="round"
+                        ></path>
+                      </svg>
+
+                      Delete
+                    </button>
+                  </a>
+                </div>
+                {%endif%}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <p class="text-lg font-semibold italic text-red-500 ml-12 mt-10">
+        No posts found 😦.
+      </p>
+      {% endif %}
+    </section>
+  </body>
+</html>
