@@ -46,7 +46,8 @@ def post_detail(request, id):
                 if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                     return JsonResponse({
                         'name': comment.name,
-                        'body': comment.body
+                        'body': comment.body,
+                        'created': comment.created
                     })
                 else:
                     return redirect('post_detail', id=post.id)
