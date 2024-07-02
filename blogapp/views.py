@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
+from django.http import JsonResponse
 from .forms import PostForm,CommentForm
 from .models import Post
 
@@ -27,7 +28,6 @@ def create_blog(request):
 
 
 # get detail page of blog
-
 def post_detail(request, id):
     post = get_object_or_404(Post, id=id)
     comments = post.comments.all()
@@ -36,12 +36,25 @@ def post_detail(request, id):
     if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.name = request.user.username
-            comment.active = True
-            comment.save()
-            return redirect('post_detail', id=post.id)
+            try:
+                comment = form.save(commit=False)
+                comment.post = post
+                comment.name = request.user.username
+                comment.active = True
+                comment.save()
+
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'name': comment.name,
+                        'body': comment.body
+                    })
+                else:
+                    return redirect('post_detail', id=post.id)
+            except Exception as e:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'error': str(e)}, status=400)
+                else:
+                    raise e
 
     context = {
         'post': post,
@@ -49,6 +62,8 @@ def post_detail(request, id):
         'form': form
     }
     return render(request, 'post_detail.html', context)
+
+
 
 
 

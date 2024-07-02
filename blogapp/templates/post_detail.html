@@ -77,19 +77,21 @@
     <div class="container">
       <h2>Comments</h2>
       <div>
-        {% if comments %} {% for comment in comments %}
-        <div>
-          <p><strong>{{ comment.name }}</strong>: {{ comment.body }}</p>
-          <p>Posted on: {{ comment.created }}</p>
+        <div id="comments">
+          {% if comments %} {% for comment in comments %}
+          <div>
+            <p><strong>{{ comment.name }}</strong>: {{ comment.body }}</p>
+            <p>Posted on: {{ comment.created }}</p>
+          </div>
+          {% endfor %} {% else %}
+          <p class="text-lg font-semibold italic text-red-500 ml-12 mt-10">
+            No comments on this post 😦.
+          </p>
+          {% endif %}
         </div>
-        {% endfor %} {% else %}
-        <p class="text-lg font-semibold italic text-red-500 ml-12 mt-10">
-          No comments on this post 😦.
-        </p>
-        {% endif %}
         {% if request.user.is_authenticated %}
         <h2>Leave a Comment</h2>
-        <form method="post" enctype="multipart/form-data">
+        <form id="commentForm" method="post" enctype="multipart/form-data">
           {% csrf_token %} {{ form.as_p }}
           <button type="submit">Comment</button>
         </form>
@@ -102,4 +104,43 @@
       </div>
     </div>
   </body>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .getElementById("commentForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          let formData = new FormData(this);
+          let csrfToken = document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+          ).value;
+
+          fetch('{% url "post_detail" post.id %}', {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": csrfToken,
+              "X-Requested-With": "XMLHttpRequest", // Indicate that this is an AJAX request
+            },
+            credentials: "same-origin",
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Append the new comment to the comments section
+              let commentsSection = document.getElementById("comments");
+              let newComment = document.createElement("p");
+              newComment.textContent = `${data.name}: ${data.body}`;
+              commentsSection.appendChild(newComment);
+
+              // Clear the form fields
+              document.getElementById("commentForm").reset();
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+    });
+  </script>
 </html>

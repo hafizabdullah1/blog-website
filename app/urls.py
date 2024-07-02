@@ -10,8 +10,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', post_list, name="home"),
     path('post/create/', create_blog, name="blog_create"),
-    path('post/<int:id>/', post_detail, name="post_detail"),
-    path('update_post/<int:id>/', update_post, name="update_post"),
+    path('post/<int:id>/', post_detail, name='post_detail'),
+        path('update_post/<int:id>/', update_post, name="update_post"),
     path('delete_post/<int:id>/', delete_post, name="delete_post"),
     
     # AUTH
