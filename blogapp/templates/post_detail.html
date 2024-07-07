@@ -131,10 +131,11 @@
               // Append the new comment to the comments section
               let commentsSection = document.getElementById("comments");
               let newComment = document.createElement("div");
-              newComment.innerHTML = `<div>
-            <p><strong>${data.name}</strong>: ${data.body}</p>
-            <p>Posted on: ${data.created}</p>
-          </div>`;
+              newComment.innerHTML = `
+              <div>
+                <p><strong>${data.name}</strong>: ${data.body}</p>
+                <p>Posted on: ${data.created}</p>
+              </div>`;
               commentsSection.appendChild(newComment);
 
               // Clear the form fields
